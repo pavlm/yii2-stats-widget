@@ -3,8 +3,6 @@ namespace pavlm\yii\stats\data;
 
 class RangePagination
 {
-    const ALIGN_CURRENT = 'current';
-    const ALIGN_PAST = 'past';
     
     /**
      * @var \DateInterval
@@ -37,23 +35,16 @@ class RangePagination
     private $rangeEnd;
     
     /**
-     * 'currentRange' - current incompleted range with incompleted periods
-     * 'past' - only completed periods 
-     * @var string 
-     */
-    public $defaultAlignment;
-    
-    /**
      * 
      * @param string|\DateInterval $interval
-     * @param integer $start
-     * @param string $timeZone
+     * @param integer|\DateTime $start
+     * @param string|\DateTimeZone $timeZone
      */
     public function __construct($interval = 'P1D', $start = null, $timeZone = null)
     {
         $this->interval = is_string($interval) ? new \DateInterval($interval) : $interval;
-        $this->setStart($start);
         $this->setTimeZone($timeZone);
+        $this->setStart($start);
         $this->init();
     }
     
@@ -63,7 +54,21 @@ class RangePagination
             new \DateTimeZone($timeZone) : 
             (!$timeZone ? (new \DateTime())->getTimezone() : $timeZone);
     }
+    
+    public function getTimeZone()
+    {
+        return $this->timeZone;
+    }
 
+    protected function setStart($value)
+    {
+        if ($value) {
+            $this->start = is_object($value) ? $value : \DateTime::createFromFormat('U', $value, $this->getTimeZone());
+        } else {
+            $this->start = $value;
+        }
+    }
+    
     protected function init()
     {
         $parts = ['y', 'm', 'd', 'h', 'i', 's'];
@@ -85,13 +90,6 @@ class RangePagination
         $this->rangeStart = $date;
         $date = clone $date;
         $this->rangeEnd = $date->add($this->interval);
-    }
-    
-    protected function setStart($value)
-    {
-        if ($value) {
-            $this->start = is_object($value) ? $value : \DateTime::createFromFormat('U', $value);
-        }
     }
     
     public function getInterval()

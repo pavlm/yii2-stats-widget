@@ -46,9 +46,8 @@ class DatePeriodIntervalsFormatter
                 if (!empty($partsChanged)) {
                     $datePartsChangedTotal = array_replace($datePartsChangedTotal, $partsChanged);
                 }
-            } else {
-                $datePartsPrev = $dateParts;
             }
+            $datePartsPrev = $dateParts;
         }
         if (empty($datePartsChangedTotal)) {
             $this->periodFormat = 'Y.m.d H:i:s'; // todo

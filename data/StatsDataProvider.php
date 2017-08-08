@@ -1,6 +1,7 @@
 <?php
 namespace pavlm\yii\stats\data;
 
+use Yii;
 use yii\base\Object;
 use yii\db\Query;
 use yii\db\Expression;
@@ -121,7 +122,7 @@ class StatsDataProvider extends Object
                     $this->dateField, $this->timeZoneConnection->getName(), $this->timeZone->getName());
             }
         } else {
-            $fieldWithTZ = sprintf("CONVERT_TZ(%s, 'SYSTEM', '%s')", $this->dateField, $this->timeZone->getName());
+            $fieldWithTZ = sprintf("CONVERT_TZ(%s, '%s', '%s')", $this->dateField, $this->timeZoneStorage->getName(), $this->timeZone->getName());
         }
         
         if ($this->groupInterval->y) {
@@ -240,6 +241,7 @@ EXPR;
             foreach ($range as $i => $groupStart) {
                 $uts = $groupStart->getTimestamp();
                 $ts = $groupStart->format('Y-m-d\TH:i:s');
+                //Yii::trace("stdp ts: $ts ({$groupStart->getTimeZone()->getName()})");
                 yield [
                     'start' => $ts, 
                     'value' => isset($data[$uts]) ? $data[$uts]['value'] : 0,

@@ -12,9 +12,14 @@ $tag = function($tag, $space = ' ') {
 <div class="stwg-zoom-controls">
 </div>
 <div class="stwg-controls clearfix">
+	<div class="pull-left">
+<?php 
+?>	
+	</div>
 	<div class="pull-right">
 <?php
 echo $tag($widget->btnHome);
+echo $tag($widget->rangeLabel);
 echo $tag($widget->btnPrev);
 echo $tag($widget->btnNext);
 echo $tag($widget->btnZoomIn);

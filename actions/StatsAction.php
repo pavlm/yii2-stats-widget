@@ -7,6 +7,7 @@ use pavlm\yii\stats\data\StatsDataProvider;
 use yii\base\InvalidConfigException;
 use yii\web\Response;
 use pavlm\yii\stats\data\RangePagination;
+use pavlm\yii\stats\data\DatePeriodFormatter;
 
 class StatsAction extends Action
 {
@@ -35,7 +36,7 @@ class StatsAction extends Action
         }
         $dateStart = null;
         if ($start) {
-            $dateStart = \DateTime::createFromFormat($this->dateFormat, $start, $this->dataProvider->timeZone);
+            $dateStart = \DateTime::createFromFormat($this->dateFormat, $start, $this->dataProvider->pagination->getTimeZone());
         }
         if ($period) {
             $groupInterval = new \DateInterval($period);
@@ -44,7 +45,8 @@ class StatsAction extends Action
         if ($range || $start) {
             $pagination = new RangePagination(
                 $range ?: $this->dataProvider->pagination->getInterval(), 
-                $dateStart ? $dateStart->getTimestamp() : null);
+                $dateStart ?: null,
+                $this->dataProvider->pagination->getTimeZone());
             $this->dataProvider->pagination = $pagination;
         }
     }
@@ -61,11 +63,13 @@ class StatsAction extends Action
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->prepare($period, $range, $start, $end);
         
-        $prevDate = $this->dataProvider->pagination->getPrevRangeStart();
-        $nextDate = $this->dataProvider->pagination->getNextRangeStart();
+        $pagination = $this->dataProvider->pagination;
+        $prevDate = $pagination->getPrevRangeStart();
+        $nextDate = $pagination->getNextRangeStart();
         $intervalSpec = function ($interval) {
             return trim(preg_replace('#(?<=[A-Z])0.#', '', $interval->format('P%yY%mM%dDT%hH%iM%sS')), 'T');
         };
+        $dpFormatter = new DatePeriodFormatter($pagination->getRangeStart(), $pagination->getRangeEnd());
         
         $data = [
             'stats' => [
@@ -78,6 +82,7 @@ class StatsAction extends Action
                 'start' => $start,
                 'prev' => $prevDate->format($this->dateFormat),
                 'next' => $nextDate->format($this->dateFormat),
+                'rangeLabel' => $dpFormatter->format(),
             ],
         ];
         return $data;

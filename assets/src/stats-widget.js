@@ -6,6 +6,7 @@
 		btnNext: '.stwg-btn-next',
 		btnZoomIn: '.stwg-btn-zoomin',
 		btnZoomOut: '.stwg-btn-zoomout',
+		rangeLabel: '.stwg-range-label',
 		levels: [],
 		period: 'P1M',
 		range: 'P1D',
@@ -83,7 +84,7 @@
 			
 			chart = $.extend(true, chart, this.opts.chartJsOptions);
 			this.chartjs = new Chart(ctx, chart);
-			
+			$(this.opts.rangeLabel, this.$el).text(this.state.rangeLabel);
         	
         },
         
