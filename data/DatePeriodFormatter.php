@@ -28,11 +28,28 @@ class DatePeriodFormatter
         's' => ['s', ':'],
     ];
     
+    /**
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array $datePartFormats
+     */
     public function __construct($start, $end, $datePartFormats = [])
     {
-        $this->start = $start;
-        $this->end = $end;
+        $this->setStart($start);
+        $this->setEnd($end);
         $this->datePartFormats = array_merge($this->datePartFormats, $datePartFormats);
+    }
+
+    protected function setStart($start)
+    {
+        // disable tz due to bug https://bugs.php.net/bug.php?id=52480
+        $this->start = new \DateTime($start->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
+    }
+
+    protected function setEnd($end)
+    {
+        // disable tz due to bug https://bugs.php.net/bug.php?id=52480
+        $this->end = new \DateTime($end->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
     }
     
     public function format()
