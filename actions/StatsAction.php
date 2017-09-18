@@ -3,52 +3,83 @@ namespace pavlm\yii\stats\actions;
 
 use Yii;
 use yii\base\Action;
-use pavlm\yii\stats\data\StatsDataProvider;
 use yii\base\InvalidConfigException;
 use yii\web\Response;
+use pavlm\yii\stats\data\TimeSeriesProvider;
 use pavlm\yii\stats\data\RangePagination;
 use pavlm\yii\stats\data\DatePeriodFormatter;
+use pavlm\yii\stats\factories\TimeSeriesProviderFactory;
 
 class StatsAction extends Action
 {
     
     /**
-     * @var StatsDataProvider|\Closure
+     * @var TimeSeriesProviderFactory
      */
-    public $dataProvider;
+    public $providerFactory;
     
+    /**
+     * @var RangePagination|string
+     */
+    public $defaultRange;
+    
+    /**
+     * @var \DateInterval|string
+     */
+    public $defaultGroup;
+
+    /**
+     * @var \DateTimeZone|string
+     */
+    public $timeZone;
+
+    /**
+     * @var string
+     */
     public $dateFormat = 'Y-m-d\TH:i:s';
     
     /**
+     * @var RangePagination
+     */
+    protected $rangePagination;
+    
+    public function init()
+    {
+        $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
+        $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
+        $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
+    }
+    
+    /**
+     * todo rename $period
+     * 
      * @param string $period
      * @param string $range
      * @param string $start
      * @param string $end
+     * @return TimeSeriesProvider
      * @throws InvalidConfigException
      */
     protected function prepare($period = null, $range = null, $start = null, $end = null)
     {
-        if (!$this->dataProvider) {
-            throw new InvalidConfigException();
-        }
-        if (($provider = $this->dataProvider) && is_callable($this->dataProvider)) {
-            $this->dataProvider = $provider($this);
-        }
-        $dateStart = null;
-        if ($start) {
-            $dateStart = \DateTime::createFromFormat($this->dateFormat, $start, $this->dataProvider->pagination->getTimeZone());
-        }
-        if ($period) {
-            $groupInterval = new \DateInterval($period);
-            $this->dataProvider->groupInterval = $groupInterval;
-        }
+        $groupInterval = $period ? new \DateInterval($period) : $this->defaultGroup;
+        
+        $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : null;
+        
         if ($range || $start) {
-            $pagination = new RangePagination(
-                $range ?: $this->dataProvider->pagination->getInterval(), 
+            $this->rangePagination = new RangePagination(
+                $range ?: $this->defaultRange->getInterval(),
                 $dateStart ?: null,
-                $this->dataProvider->pagination->getTimeZone());
-            $this->dataProvider->pagination = $pagination;
+                $this->timeZone);
+        } else {
+            $this->rangePagination = $this->defaultRange;
         }
+        
+        return $this->providerFactory->create(
+            $this->rangePagination->getRangeStart(), 
+            $this->rangePagination->getRangeEnd(), 
+            $groupInterval, 
+            $this->timeZone);
     }
     
     /**
@@ -61,27 +92,24 @@ class StatsAction extends Action
     public function run($period = null, $range = null, $start = null, $end = null)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $this->prepare($period, $range, $start, $end);
+        $provider = $this->prepare($period, $range, $start, $end);
         
-        $pagination = $this->dataProvider->pagination;
-        $prevDate = $pagination->getPrevRangeStart();
-        $nextDate = $pagination->getNextRangeStart();
         $intervalSpec = function ($interval) {
             return trim(preg_replace('#(?<=[A-Z])0.#', '', $interval->format('P%yY%mM%dDT%hH%iM%sS')), 'T');
         };
-        $dpFormatter = new DatePeriodFormatter($pagination->getRangeStart(), $pagination->getRangeEnd());
+        $dpFormatter = new DatePeriodFormatter($this->rangePagination->getRangeStart(), $this->rangePagination->getRangeEnd());
         
         $data = [
             'stats' => [
-                'data' => $this->dataProvider->getDataArray(),
-                'totalValue' => $this->dataProvider->getTotalValue(),
+                'data' => iterator_to_array($provider->getIterator()),
+                'totalValue' => $provider->getTotalValue(),
             ],
             'state' => [
-                'period' => $intervalSpec($this->dataProvider->groupInterval),
-                'range' => $intervalSpec($this->dataProvider->pagination->getInterval()),
+                'period' => $intervalSpec($provider->getGroupInterval()),
+                'range' => $intervalSpec($this->rangePagination->getInterval()),
                 'start' => $start,
-                'prev' => $prevDate->format($this->dateFormat),
-                'next' => $nextDate->format($this->dateFormat),
+                'prev' => $this->rangePagination->getPrevRangeStart()->format($this->dateFormat),
+                'next' => $this->rangePagination->getNextRangeStart()->format($this->dateFormat),
                 'rangeLabel' => $dpFormatter->format(),
             ],
         ];

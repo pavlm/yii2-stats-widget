@@ -71,6 +71,7 @@ class RangePagination
     
     protected function init()
     {
+        // todo separate clamp date 
         $parts = ['y', 'm', 'd', 'h', 'i', 's'];
         $formats = ['Y', 'm', 'd', 'H', 'i', 's'];
         $values = [0, 1, 1, 0, 0, 0];
