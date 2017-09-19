@@ -39,6 +39,11 @@ class DatePeriodFormatterTest extends TestCase
                 '2016 Dec',
             ],
             [
+                new \DateTime('2017-07-01 00:00:00'),
+                new \DateTime('2017-08-01 00:00:00'),
+                '2017 Jul',
+            ],
+            [
                 new \DateTime('2017-07-01 00:00:00', new \DateTimeZone('Europe/Moscow')),
                 new \DateTime('2017-08-01 00:00:00', new \DateTimeZone('Europe/Moscow')),
                 '2017 Jul',
