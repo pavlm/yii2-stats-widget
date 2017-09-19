@@ -24,7 +24,7 @@ class StatsWidget extends Widget
 
     public $btnZoomOut = ['a', '<i class="glyphicon glyphicon-minus"></i>', ['class' => 'stwg-btn-zoomout btn btn-default btn-xs']];
     
-    public $rangeLabel = ['span', '', ['class' => 'stwg-range-label btn btn-default btn-xs']];
+    public $rangeLabel = ['span', '&nbsp;', ['class' => 'stwg-range-label btn btn-default btn-xs']];
     
     public $chartJsOptions = [
         'data' => [
