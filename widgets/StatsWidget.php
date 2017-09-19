@@ -47,7 +47,6 @@ class StatsWidget extends Widget
     ];
     
     public $options = [
-        'style' => 'height: 250px;',
     ];
     
     public function getClientOptions()
