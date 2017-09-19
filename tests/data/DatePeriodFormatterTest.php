@@ -58,6 +58,16 @@ class DatePeriodFormatterTest extends TestCase
                 new \DateTime('2018-01-01 00:00:00'),
                 '2016 - 2017',
             ],
+            [
+                new \DateTime('2016-01-01 00:00:00'),
+                new \DateTime('2016-03-01 00:00:00'),
+                '2016 Jan - 2016 Feb',
+            ],
+            [
+                new \DateTime('2016-01-01 00:00:00'),
+                new \DateTime('2016-01-03 00:00:00'),
+                '2016 Jan 01 - 2016 Jan 02',
+            ],
             
         ];
     }

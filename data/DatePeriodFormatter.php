@@ -18,6 +18,8 @@ class DatePeriodFormatter
     protected $end;
     
     protected static $intervalParts = ['y', 'm', 'd', 'h', 'i', 's', ];
+    
+    protected static $intervalPartSpecs = ['Y', 'M', 'D', 'H', 'M', 'S', ];
 
     protected $datePartFormats = [
         'y' => ['Y', ''],
@@ -67,6 +69,12 @@ class DatePeriodFormatter
         $format = array_reduce($datePartFormats, function ($format, $part) {
             return $format . $part[1] . $part[0];
         }, '');
+        if (!$singleCalendarPeriod) {
+            // decrease last changed component by one
+            $spec = 'P' . ($lastPartIndex > 2 ? 'T' : '') . '1' . self::$intervalPartSpecs[$lastPartIndex];
+            $subInterval = new \DateInterval($spec);
+            $this->end->sub($subInterval);
+        }
         $dates = $singleCalendarPeriod ? [$this->start] : [$this->start, $this->end];
         foreach ($dates as $i => $date) {
             $dates[$i] = $date->format($format);
