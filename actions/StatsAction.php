@@ -48,7 +48,7 @@ class StatsAction extends Action
         $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
         $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
         $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
-        $this->timeZone = $this->timeZone ?: date_default_timezone_get();
+        $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
     }
     
     /**
