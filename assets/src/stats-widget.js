@@ -51,7 +51,6 @@
         	$.getJSON(this.opts.statsAction, query, function (data) {
         		
         		this.state = $.extend(this.state, data.state);
-        		console.log(this.state);
         		this.render(data.stats);
 				
         	}.bind(this));
@@ -60,6 +59,7 @@
         
         render: function(stats) {
         	
+        	this.stats = stats;
         	if (this.chartjs) {
         		this.chartjs.destroy();
         	}
@@ -79,13 +79,28 @@
 			        datasets: [{
 			            data: values
 			        }]
-			    }
+			    },
+			    options: {
+				    onClick: this.onChartClick.bind(this),
+			    },
 			};
 			
 			chart = $.extend(true, chart, this.opts.chartJsOptions);
 			this.chartjs = new Chart(ctx, chart);
 			$(this.opts.rangeLabel, this.$el).text(this.state.rangeLabel);
         	
+        },
+        
+        onChartClick: function(e) {
+	    	var el = this.chartjs.getElementAtEvent(e);
+	    	if (!el.length) return;
+	    	el = el[0];
+	    	var ditem = this.stats.data[el._index];
+	    	var level = this.levelFindCurrent();
+	    	var levelIdx = this.opts.levels.indexOf(level);
+	    	if (levelIdx == (this.opts.levels.length - 1)) return;
+	    	var nextLevel = this.opts.levels[levelIdx + 1];
+	    	this.load(nextLevel[0], nextLevel[1], ditem.start);
         },
         
         levelFindCurrent: function() {
@@ -122,21 +137,23 @@
         	if (nextIdx < 0) return;
         	level = this.opts.levels[nextIdx];
         	this.load(level[0], level[1], this.state.start);
-        },
+        }
 
     };
 
-$.fn['statsWidget'] = function ( options ) {
-    return this.each(function () {
-    	var cmnts = $.data(this, "statsWidget"); 
-        if (!cmnts) {
-            $.data(this, "statsWidget", new StatsWidget( this, options ));
-        } else {
-        	if (typeof options == 'string') {
-        		cmnts[options]();
-        	}
-        }
-    });
-};
+	$.fn['statsWidget'] = function ( options ) {
+	    return this.each(function () {
+	    	var cmnts = $.data(this, "statsWidget"); 
+	        if (!cmnts) {
+	            $.data(this, "statsWidget", new StatsWidget( this, options ));
+	        } else {
+	        	if (typeof options == 'string') {
+	        		cmnts[options]();
+	        	}
+	        }
+	    });
+	};
+	
+	window['StatsWidget'] = StatsWidget;
 
 })( jQuery, window, document );

@@ -3,7 +3,8 @@
     "description": "Statistics widget based on sql tables data",
     "type": "yii2-extension",
     "require": {
-        "yiisoft/yii2": "^2.0"
+        "yiisoft/yii2": "^2.0",
+        "bower-asset/chartjs": "*"
     },
 	"repositories": [
 	    {
