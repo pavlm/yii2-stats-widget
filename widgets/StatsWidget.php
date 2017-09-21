@@ -23,8 +23,10 @@ class StatsWidget extends Widget
     public $btnZoomIn = ['a', '<i class="glyphicon glyphicon-plus"></i>', ['class' => 'stwg-btn-zoomin btn btn-default btn-xs']];
 
     public $btnZoomOut = ['a', '<i class="glyphicon glyphicon-minus"></i>', ['class' => 'stwg-btn-zoomout btn btn-default btn-xs']];
-    
+
     public $rangeLabel = ['span', '&nbsp;', ['class' => 'stwg-range-label btn btn-default btn-xs']];
+
+    public $totalLabel = ['span', 'Total', ['class' => 'stwg-total-label label label-success']];
     
     public $chartJsOptions = [
         'data' => [

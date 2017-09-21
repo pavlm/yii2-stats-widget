@@ -115,7 +115,10 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
      */
     public function getTotalValue()
     {
-        
+        $values = array_map(function ($item) {
+            return $item['value'];
+        }, $this->loadData());
+        return call_user_func($this->totalFunc, $values);
     }
     
     public function getIterator()

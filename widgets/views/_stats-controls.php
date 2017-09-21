@@ -24,6 +24,11 @@ echo $tag($widget->btnPrev);
 echo $tag($widget->btnNext);
 echo $tag($widget->btnZoomIn);
 echo $tag($widget->btnZoomOut);
+list($ttag, $tlabel, $topts) = $widget->totalLabel;
+echo Html::beginTag($ttag, $topts);
+echo Yii::t('app', $tlabel) . ': ';
+echo Html::tag('span', '', ['class' => 'stwg-total-value']);
+echo Html::endTag($ttag);
 ?>
 	</div>
 </div>

@@ -7,6 +7,7 @@
 		btnZoomIn: '.stwg-btn-zoomin',
 		btnZoomOut: '.stwg-btn-zoomout',
 		rangeLabel: '.stwg-range-label',
+		totalValueTag: '.stwg-total-value', 
 		levels: [],
 		period: 'P1M',
 		range: 'P1D',
@@ -17,11 +18,7 @@
         this.canvas = $el.find('canvas').get(0);
         //var sets = JSON.parse($el.attr('data-StatsWidget-sets'));
         //this.opts = $.extend( {}, defaultOpts, sets, opts) ;
-        var opts0 = {
-        	pjaxId : element.id + '-pjax',
-        	pjaxListId : element.id + '-list-pjax',
-        };
-        this.opts = $.extend( {}, defaults, opts0, opts) ;
+        this.opts = $.extend( {}, defaults, opts) ;
         this.state = {};
         this.init();
     }
@@ -88,6 +85,7 @@
 			chart = $.extend(true, chart, this.opts.chartJsOptions);
 			this.chartjs = new Chart(ctx, chart);
 			$(this.opts.rangeLabel, this.$el).text(this.state.rangeLabel);
+			$(this.opts.totalValueTag, this.$el).text(this.stats.totalValue);
         	
         },
         
