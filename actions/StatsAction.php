@@ -27,6 +27,11 @@ class StatsAction extends Action
      * @var \DateInterval|string
      */
     public $defaultGroup = 'P1M';
+    
+    /**
+     * @var \DateTime
+     */
+    public $defaultStart;
 
     /**
      * @var \DateTimeZone|string
@@ -47,6 +52,7 @@ class StatsAction extends Action
     {
         $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
         $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
+        $this->defaultStart = is_string($this->defaultStart) ? new \DateTime($this->defaultStart) : $this->defaultStart;
         $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
         $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
     }
@@ -65,9 +71,9 @@ class StatsAction extends Action
     {
         $groupInterval = $period ? new \DateInterval($period) : $this->defaultGroup;
         
-        $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : null;
+        $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : $this->defaultStart;
         
-        if ($range || $start) {
+        if ($range || $dateStart) {
             $this->rangePagination = new RangePagination(
                 $range ?: $this->defaultRange->getInterval(),
                 $dateStart ?: null,
