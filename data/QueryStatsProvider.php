@@ -75,7 +75,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     
         $this->timeZone = $tzInit($this->timeZone, $this->timeZone ?: (new \DateTime())->getTimezone());
         $this->timeZoneStorage = $tzInit($this->timeZoneStorage, 'UTC');
-        $this->timeZoneConnection = $tzInit($this->timeZoneConnection, $this->timeZoneStorage);
+        $this->timeZoneConnection = $tzInit($this->timeZoneConnection, null);
     }
     
     /**
@@ -167,13 +167,13 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
          $query->groupBy('value');
          $query->orderBy([$this->dateField => SORT_ASC]);
          */
-    
+
         if ($this->dateFieldType == self::DATETYPE_INT) {
-            if ($this->timeZoneConnection->getName() == $this->timeZone->getName()) {
+            if ($this->timeZoneConnection && $this->timeZoneConnection->getName() == $this->timeZone->getName()) {
                 $fieldWithTZ = sprintf("FROM_UNIXTIME(%s)", $this->dateField); // no tz conversion needed
             } else {
-                $fieldWithTZ = sprintf("CONVERT_TZ(FROM_UNIXTIME(%s), '%s', '%s')",
-                    $this->dateField, $this->timeZoneConnection->getName(), $this->timeZone->getName());
+                $fieldWithTZ = sprintf("CONVERT_TZ(FROM_UNIXTIME(%s), @@session.time_zone, '%s')",
+                    $this->dateField, $this->timeZone->getName());
             }
         } else {
             $fieldWithTZ = sprintf("CONVERT_TZ(%s, '%s', '%s')", $this->dateField, $this->timeZoneStorage->getName(), $this->timeZone->getName());
@@ -224,15 +224,15 @@ EXPR;
     
             // now $groupExpr contains date timestamp in target time zone
             // converting to universal time
-    
+            
             $groupExpr = <<<EXPR
 UNIX_TIMESTAMP(
 CONVERT_TZ(
 {$groupExpr},
-'{$this->timeZone->getName()}', '{$this->timeZoneConnection->getName()}')
+'{$this->timeZone->getName()}', @@session.time_zone)
 )
 EXPR;
-    
+
     $query->addSelect(['start' => new Expression($groupExpr)]);
     $query->groupBy('start');
     $query->indexBy('start');

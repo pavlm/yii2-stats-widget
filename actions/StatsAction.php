@@ -50,11 +50,11 @@ class StatsAction extends Action
     
     public function init()
     {
+        $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
+        $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
         $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
         $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
         $this->defaultStart = is_string($this->defaultStart) ? new \DateTime($this->defaultStart) : $this->defaultStart;
-        $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
-        $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
     }
     
     /**
