@@ -67,15 +67,24 @@
 			var values = stats.data.map(function (item) {
 				return item.value;
 			});
+			var datasets = stats.data.reduce(function (datasets, item) {
+				var v = item.value;
+				var vs = !Array.isArray(v) ? [v] : v;
+				for (var vi=0; vi<vs.length; vi++) {
+					if (!datasets[vi]) {
+						datasets[vi] = { data: [] };
+					}
+					datasets[vi].data.push(vs[vi]);
+				}
+				return datasets;
+			}, []);
     		  
 			var ctx = this.canvas.getContext('2d');
 			var chart = {
 			    type: 'bar',
 			    data: {
 			        labels: labels,
-			        datasets: [{
-			            data: values
-			        }]
+			        datasets: datasets
 			    },
 			    options: {
 				    onClick: this.onChartClick.bind(this),
