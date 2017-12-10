@@ -133,7 +133,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
             //Yii::trace("stdp ts: $ts ({$groupStart->getTimeZone()->getName()})");
             yield [
                 'start' => $ts,
-                'value' => isset($data[$uts]) ? $data[$uts]['value'] : 0,
+                'value' => isset($data[$uts]) ? $data[$uts]['value'] : null,
                 'label' => $periods[$i],
             ];
         }

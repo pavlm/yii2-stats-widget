@@ -5,6 +5,7 @@ use Yii;
 use yii\base\Action;
 use yii\base\InvalidConfigException;
 use yii\web\Response;
+use yii\web\JsonResponseFormatter;
 use pavlm\yii\stats\data\TimeSeriesProvider;
 use pavlm\yii\stats\data\RangePagination;
 use pavlm\yii\stats\data\DatePeriodFormatter;
@@ -42,6 +43,11 @@ class StatsAction extends Action
      * @var string
      */
     public $dateFormat = 'Y-m-d\TH:i:s';
+    
+    public $responseFormatter = [
+        'class' => JsonResponseFormatter::class,
+        'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR,
+    ];
     
     /**
      * @var RangePagination
@@ -98,7 +104,9 @@ class StatsAction extends Action
      */
     public function run($period = null, $range = null, $start = null, $end = null)
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = Yii::$app->response;
+        $response->format = Response::FORMAT_JSON;
+        $response->formatters[Response::FORMAT_JSON] = $this->responseFormatter;
         $provider = $this->prepare($period, $range, $start, $end);
         
         $intervalSpec = function ($interval) {
@@ -120,7 +128,14 @@ class StatsAction extends Action
                 'rangeLabel' => $dpFormatter->format(),
             ],
         ];
-        return $data;
+        
+        //return $data;
+        
+        // manual encoding to avoid JSON_ERROR_INF_OR_NAN error
+        $response->format = Response::FORMAT_RAW;
+        $response->getHeaders()->set('Content-Type', 'application/javascript; charset=UTF-8');
+        $response->data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+        return $response;
     }
     
 }
