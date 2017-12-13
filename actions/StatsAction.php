@@ -10,6 +10,9 @@ use pavlm\yii\stats\data\TimeSeriesProvider;
 use pavlm\yii\stats\data\RangePagination;
 use pavlm\yii\stats\data\DatePeriodFormatter;
 use pavlm\yii\stats\factories\TimeSeriesProviderFactory;
+use pavlm\yii\stats\factories\TimeSeriesFormatterFactory;
+use pavlm\yii\stats\factories\TimeSeriesFormatterCallbackFactory;
+use pavlm\yii\stats\data\formatter\TimeSeriesFormatter;
 
 class StatsAction extends Action
 {
@@ -18,6 +21,11 @@ class StatsAction extends Action
      * @var TimeSeriesProviderFactory
      */
     public $providerFactory;
+    
+    /**
+     * @var TimeSeriesFormatterFactory
+     */
+    public $formatterFactory;
     
     /**
      * @var RangePagination|string
@@ -56,11 +64,19 @@ class StatsAction extends Action
     
     public function init()
     {
+        if (!$this->providerFactory) {
+            throw new InvalidConfigException();
+        }
         $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
         $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
         $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
         $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
         $this->defaultStart = is_string($this->defaultStart) ? new \DateTime($this->defaultStart) : $this->defaultStart;
+        if (!$this->formatterFactory) {
+            $this->formatterFactory = new TimeSeriesFormatterCallbackFactory(function ($provider) {
+                return new TimeSeriesFormatter($provider);
+            });
+        }
     }
     
     /**
@@ -71,7 +87,6 @@ class StatsAction extends Action
      * @param string $start
      * @param string $end
      * @return TimeSeriesProvider
-     * @throws InvalidConfigException
      */
     protected function prepare($period = null, $range = null, $start = null, $end = null)
     {
@@ -88,11 +103,13 @@ class StatsAction extends Action
             $this->rangePagination = $this->defaultRange;
         }
         
-        return $this->providerFactory->create(
+        $provider = $this->providerFactory->create(
             $this->rangePagination->getRangeStart(), 
             $this->rangePagination->getRangeEnd(), 
             $groupInterval, 
             $this->timeZone);
+        $formatter = $this->formatterFactory->create($provider);
+        return $formatter;
     }
     
     /**
@@ -131,7 +148,7 @@ class StatsAction extends Action
         
         //return $data;
         
-        // manual encoding to avoid JSON_ERROR_INF_OR_NAN error
+        // manual response encoding to avoid JSON_ERROR_INF_OR_NAN error
         $response->format = Response::FORMAT_RAW;
         $response->getHeaders()->set('Content-Type', 'application/javascript; charset=UTF-8');
         $response->data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);

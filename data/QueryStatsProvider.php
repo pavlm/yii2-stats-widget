@@ -125,16 +125,11 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     {
         $data = $this->loadData(true);
         $range = new \DatePeriod($this->getRangeStart(), $this->getGroupInterval(), $this->getRangeEnd());
-        $formatter = new DatePeriodIntervalsFormatter($range);
-        $periods = $formatter->getPeriodsFormatted();
         foreach ($range as $i => $groupStart) {
             $uts = $groupStart->getTimestamp();
-            $ts = $groupStart->format('Y-m-d\TH:i:s');
-            //Yii::trace("stdp ts: $ts ({$groupStart->getTimeZone()->getName()})");
             yield [
-                'start' => $ts,
+                'ts' => $uts,
                 'value' => isset($data[$uts]) ? $data[$uts]['value'] : null,
-                'label' => $periods[$i],
             ];
         }
     }
