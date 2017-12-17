@@ -53,9 +53,9 @@ class TimeSeriesFormatter implements TimeSeriesProvider
     /**
      * @return \DateInterval
      */
-    public function getGroupInterval()
+    public function getPeriodInterval()
     {
-        return $this->provider->getGroupInterval();
+        return $this->provider->getPeriodInterval();
     }
     
     /**
@@ -95,7 +95,7 @@ class TimeSeriesFormatter implements TimeSeriesProvider
         // start of first and last periods
         $first = clone $this->getRangeStart();
         $last = clone $this->getRangeEnd();
-        $last->sub($this->getGroupInterval());
+        $last->sub($this->getPeriodInterval());
         
         $splitDate = function ($date) {
             return explode('-', $date->format('Y-m-d-H-i-s'));

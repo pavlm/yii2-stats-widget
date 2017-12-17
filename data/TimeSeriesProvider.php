@@ -17,7 +17,7 @@ interface TimeSeriesProvider extends \IteratorAggregate
     /**
      * @return \DateInterval
      */
-    public function getGroupInterval();
+    public function getPeriodInterval();
     
     /**
      * @return \DateTime

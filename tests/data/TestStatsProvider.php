@@ -17,7 +17,7 @@ class TestStatsProvider implements TimeSeriesProvider
     
     private $end;
     
-    private $groupInterval;
+    private $periodInterval;
     
     /**
      * @param array $array
@@ -28,7 +28,7 @@ class TestStatsProvider implements TimeSeriesProvider
     {
         $this->array = $array;
         $this->start = $start;
-        $this->groupInterval = $interval;
+        $this->periodInterval = $interval;
         $mulInterval = function ($idst, $isrc, $m) {
             foreach (['y', 'm', 'd', 'h', 'i', 's', ] as $part) {
                 $idst->$part = $isrc->$part * $m;
@@ -43,9 +43,9 @@ class TestStatsProvider implements TimeSeriesProvider
     /**
      * @return \DateInterval
      */
-    public function getGroupInterval()
+    public function getPeriodInterval()
     {
-        return $this->groupInterval;
+        return $this->periodInterval;
     }
     
     /**
@@ -82,7 +82,7 @@ class TestStatsProvider implements TimeSeriesProvider
     
     public function getIterator()
     {
-        $datePeriod = new \DatePeriod($this->start, $this->groupInterval, count($this->array) - 1);
+        $datePeriod = new \DatePeriod($this->start, $this->periodInterval, count($this->array) - 1);
         foreach ($datePeriod as $i => $period) {
             $v = $this->array[$i];
             yield [

@@ -14,6 +14,13 @@ use pavlm\yii\stats\factories\TimeSeriesFormatterFactory;
 use pavlm\yii\stats\factories\TimeSeriesFormatterCallbackFactory;
 use pavlm\yii\stats\data\formatter\TimeSeriesFormatter;
 
+/**
+ * Binds StatsWidget and TimeSeriesProvider together.
+ * Handles query from StatsWidget.
+ * Responds with data from configured TimeSeriesProvider. 
+ * 
+ * @author pavlm
+ */
 class StatsAction extends Action
 {
     
@@ -35,7 +42,7 @@ class StatsAction extends Action
     /**
      * @var \DateInterval|string
      */
-    public $defaultGroup = 'P1M';
+    public $defaultPeriod = 'P1M';
     
     /**
      * @var \DateTime
@@ -70,7 +77,7 @@ class StatsAction extends Action
         $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
         $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
         $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
-        $this->defaultGroup = is_string($this->defaultGroup) ? new \DateInterval($this->defaultGroup) : $this->defaultGroup;
+        $this->defaultPeriod = is_string($this->defaultPeriod) ? new \DateInterval($this->defaultPeriod) : $this->defaultPeriod;
         $this->defaultStart = is_string($this->defaultStart) ? new \DateTime($this->defaultStart) : $this->defaultStart;
         if (!$this->formatterFactory) {
             $this->formatterFactory = new TimeSeriesFormatterCallbackFactory(function ($provider) {
@@ -90,7 +97,7 @@ class StatsAction extends Action
      */
     protected function prepare($period = null, $range = null, $start = null, $end = null)
     {
-        $groupInterval = $period ? new \DateInterval($period) : $this->defaultGroup;
+        $periodInterval = $period ? new \DateInterval($period) : $this->defaultPeriod;
         
         $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : $this->defaultStart;
         
@@ -106,7 +113,7 @@ class StatsAction extends Action
         $provider = $this->providerFactory->create(
             $this->rangePagination->getRangeStart(), 
             $this->rangePagination->getRangeEnd(), 
-            $groupInterval, 
+            $periodInterval, 
             $this->timeZone);
         $formatter = $this->formatterFactory->create($provider);
         return $formatter;
@@ -137,7 +144,7 @@ class StatsAction extends Action
                 'totalValue' => $provider->getTotalValue(),
             ],
             'state' => [
-                'period' => $intervalSpec($provider->getGroupInterval()),
+                'period' => $intervalSpec($provider->getPeriodInterval()),
                 'range' => $intervalSpec($this->rangePagination->getInterval()),
                 'start' => $start,
                 'prev' => $this->rangePagination->getPrevRangeStart()->format($this->dateFormat),

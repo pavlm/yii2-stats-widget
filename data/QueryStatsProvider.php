@@ -14,7 +14,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     /**
      * @var \DateInterval
      */
-    public $groupInterval;
+    public $periodInterval;
 
     /**
      * @var \DateTime
@@ -81,9 +81,9 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     /**
      * @return \DateInterval
      */
-    public function getGroupInterval()
+    public function getPeriodInterval()
     {
-        return $this->groupInterval;
+        return $this->periodInterval;
     }
     
     /**
@@ -124,7 +124,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     public function getIterator()
     {
         $data = $this->loadData(true);
-        $range = new \DatePeriod($this->getRangeStart(), $this->getGroupInterval(), $this->getRangeEnd());
+        $range = new \DatePeriod($this->getRangeStart(), $this->getPeriodInterval(), $this->getRangeEnd());
         foreach ($range as $i => $groupStart) {
             $uts = $groupStart->getTimestamp();
             yield [
@@ -152,9 +152,9 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
          }
     
          $groupExpr = '';
-         if ($this->groupInterval->y) {
+         if ($this->periodInterval->y) {
          $groupExpr = sprintf("YEAR(%s)", $fieldWithTZ);
-         } elseif ($this->groupInterval->m) {
+         } elseif ($this->periodInterval->m) {
          $groupExpr = sprintf("YEAR(%s) * 12 + MONTH(%s)", $fieldWithTZ, $fieldWithTZ);
          }
     
@@ -174,7 +174,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
             $fieldWithTZ = sprintf("CONVERT_TZ(%s, '%s', '%s')", $this->dateField, $this->timeZoneStorage->getName(), $this->timeZone->getName());
         }
     
-        if ($this->groupInterval->y) {
+        if ($this->periodInterval->y) {
             $groupExpr = <<<EXPR
 CONCAT(
  YEAR( {$fieldWithTZ} ), '-'
@@ -183,7 +183,7 @@ CONCAT(
 )
 EXPR;
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-01-01' )";
-        } elseif ($this->groupInterval->m) {
+        } elseif ($this->periodInterval->m) {
             $groupExpr = <<<EXPR
 CONCAT(
  YEAR( {$fieldWithTZ} ), '-',
@@ -191,7 +191,7 @@ CONCAT(
  '01'
 )
 EXPR;
-        } elseif ($this->groupInterval->d) {
+        } elseif ($this->periodInterval->d) {
             $groupExpr = <<<EXPR
 CONCAT(
  YEAR( {$fieldWithTZ} ), '-',
@@ -199,7 +199,7 @@ CONCAT(
  DAY( {$fieldWithTZ} )
 )
 EXPR;
-            } elseif ($this->groupInterval->h) {
+            } elseif ($this->periodInterval->h) {
     
                 if ($this->timeZoneForHours) {
                     $groupExpr = <<<EXPR

@@ -8,9 +8,9 @@ interface TimeSeriesProviderFactory
     /**
      * @param \DateTime $rangeStart
      * @param \DateTime $rangeEnd
-     * @param \DateInterval $groupInterval
+     * @param \DateInterval $periodInterval
      * @param \DateTimeZone $timeZone
      * @return TimeSeriesProvider
      */
-    public function create($rangeStart, $rangeEnd, $groupInterval, $timeZone);
+    public function create($rangeStart, $rangeEnd, $periodInterval, $timeZone);
 }

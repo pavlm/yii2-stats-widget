@@ -20,7 +20,7 @@ class MergedStatsProvider extends Object implements TimeSeriesProvider
     /**
      * @var \DateInterval
      */
-    public $groupInterval;
+    public $periodInterval;
     
     /**
      * @var \DateTime
@@ -44,21 +44,21 @@ class MergedStatsProvider extends Object implements TimeSeriesProvider
     
     public function init()
     {
-        if (!$this->groupInterval || !$this->rangeStart || !$this->rangeEnd || !$this->timeZone ||
+        if (!$this->periodInterval || !$this->rangeStart || !$this->rangeEnd || !$this->timeZone ||
             !$this->statsProviderFactories || !$this->mergeCallback) {
             throw new InvalidConfigException();
         }
         $this->statsProviders = array_map(function (TimeSeriesProviderFactory $factory) {
-            return $factory->create($this->rangeStart, $this->rangeEnd, $this->groupInterval, $this->timeZone);
+            return $factory->create($this->rangeStart, $this->rangeEnd, $this->periodInterval, $this->timeZone);
         }, $this->statsProviderFactories);
     }
     
     /**
      * @return \DateInterval
      */
-    public function getGroupInterval()
+    public function getPeriodInterval()
     {
-        return $this->groupInterval;
+        return $this->periodInterval;
     }
     
     /**
