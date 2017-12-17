@@ -1,10 +1,13 @@
 {
     "name": "pavlm/yii2-stats-widget",
-    "description": "Statistics widget based on sql tables data",
+    "description": "Statistics widget for exploring time series data from diffrent sources of your application",
     "type": "yii2-extension",
     "require": {
-        "yiisoft/yii2": "^2.0",
+    	"php": ">=5.5",
         "bower-asset/chartjs": "*"
+    },
+    "require-dev": {
+        "yiisoft/yii2": "^2.0"
     },
 	"repositories": [
 	    {
