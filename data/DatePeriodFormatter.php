@@ -2,7 +2,10 @@
 namespace pavlm\yii\stats\data;
 
 /**
- * 
+ * Formates date range in brief form.
+ * Examples of formatting:
+ * ['2016-12-31', '2017-01-01') => '2016 Dec 31'
+ * ['2016-01-01', '2016-03-01') => '2016 Jan - 2016 Feb',
  */
 class DatePeriodFormatter
 {
@@ -22,12 +25,12 @@ class DatePeriodFormatter
     protected static $intervalPartSpecs = ['Y', 'M', 'D', 'H', 'M', 'S', ];
 
     protected $datePartFormats = [
-        'y' => ['Y', ''],
-        'm' => ['M', ' '],
-        'd' => ['d', ' '],
-        'h' => ['H', ' '],
-        'i' => ['i', ':'],
-        's' => ['s', ':'],
+        'y' => ['%Y', ''],
+        'm' => ['%h', ' '],
+        'd' => ['%d', ' '],
+        'h' => ['%H', ' '],
+        'i' => ['%M', ':'],
+        's' => ['%S', ':'],
     ];
     
     /**
@@ -77,7 +80,7 @@ class DatePeriodFormatter
         }
         $dates = $singleCalendarPeriod ? [$this->start] : [$this->start, $this->end];
         foreach ($dates as $i => $date) {
-            $dates[$i] = $date->format($format);
+            $dates[$i] = strftime($format, $date->getTimestamp()); // $date->format($format);
         }
         return implode(' - ', $dates);
     }

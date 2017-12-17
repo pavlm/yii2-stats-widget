@@ -15,6 +15,7 @@ class DatePeriodFormatterTest extends TestCase
      */
     public function test($start, $end, $expectedResult)
     {
+        setlocale(LC_ALL, 'C');
         $f = new DatePeriodFormatter($start, $end);
         $result = $f->format();
         $this->assertEquals($expectedResult, $result);
@@ -67,6 +68,11 @@ class DatePeriodFormatterTest extends TestCase
                 new \DateTime('2016-01-01 00:00:00'),
                 new \DateTime('2016-01-03 00:00:00'),
                 '2016 Jan 01 - 2016 Jan 02',
+            ],
+            [
+                new \DateTime('2016-01-01 00:00:00'),
+                new \DateTime('2016-01-02 00:00:00'),
+                '2016 Jan 01',
             ],
             
         ];

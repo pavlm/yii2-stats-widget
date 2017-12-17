@@ -17,7 +17,10 @@ use pavlm\yii\stats\data\TimeSeriesProvider;
  *   'start' => '2017-01-01T00:00:00',
  *   'label' => '2017 Jan 01', 
  * ]
- *   
+ * 'label' format detected automatically.
+ * It contains only changing date parts.
+ * For date range ['2017-01-01', '2017-01-03') two labels will be produced: '01', '02'.
+ * 
  * @author pavlm
  */
 class TimeSeriesFormatter implements TimeSeriesProvider
@@ -33,12 +36,12 @@ class TimeSeriesFormatter implements TimeSeriesProvider
     private $format;
 
     private $partFormats = [
-        0 => 'Y',
-        1 => 'M',
-        2 => 'd',
-        3 => 'H',
-        4 => 'i',
-        5 => 's',
+        0 => '%Y',
+        1 => '%h',
+        2 => '%d',
+        3 => '%H',
+        4 => '%M',
+        5 => '%S',
     ];
     
     public function __construct($provider)
@@ -122,7 +125,7 @@ class TimeSeriesFormatter implements TimeSeriesProvider
             $date = new \DateTime('@' . $period['ts']);
             $date->setTimezone($tz);
             $period['start'] = $date->format('Y-m-d\TH:i:s');
-            $period['label'] = $date->format($this->format);
+            $period['label'] = strftime($this->format, $date->getTimestamp());
             yield $period;
         }
     }
