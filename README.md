@@ -26,11 +26,11 @@ Add action to some controller. Configure time series provider.
         return [
             'stats-users' => [
                 'class' => StatsAction::class,
-                'providerFactory' => new TimeSeriesProviderCallbackFactory(function ($rangeStart, $rangeEnd, $groupInterval, $timeZone) {
+                'providerFactory' => new TimeSeriesProviderCallbackFactory(function ($rangeStart, $rangeEnd, $periodInterval, $timeZone) {
                     return new QueryStatsProvider([
                         'rangeStart' => $rangeStart,
                         'rangeEnd' => $rangeEnd,
-                        'groupInterval' => $groupInterval,
+                        'periodInterval' => $periodInterval,
                         'timeZone' => $timeZone,
                         'timeZoneConnection' => new \DateTimeZone('Europe/Moscow'),
                         'query' => (new Query())->from('user'),
@@ -40,7 +40,7 @@ Add action to some controller. Configure time series provider.
                 }),
                 'timeZone' => 'Europe/Moscow',
                 'defaultRange' => 'P2Y',
-                'defaultGroup' => 'P1Y',
+                'defaultPeriod' => 'P1Y',
             ],
         ];
     }

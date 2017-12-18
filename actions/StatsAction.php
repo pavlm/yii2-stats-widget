@@ -87,8 +87,6 @@ class StatsAction extends Action
     }
     
     /**
-     * todo rename $period
-     * 
      * @param string $period
      * @param string $range
      * @param string $start

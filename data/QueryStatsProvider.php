@@ -5,6 +5,12 @@ use yii\base\Object;
 use yii\db\Query;
 use yii\db\Expression;
 
+/**
+ * Time series provider for mysql tables.
+ * Generates sql query considering date range, group period and time zone.
+ * 
+ * @author pavlm
+ */
 class QueryStatsProvider extends Object implements TimeSeriesProvider
 {
     const DATETYPE_DATETIME = 'DATETIME';
@@ -175,52 +181,23 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
         }
     
         if ($this->periodInterval->y) {
-            $groupExpr = <<<EXPR
-CONCAT(
- YEAR( {$fieldWithTZ} ), '-'
- '01', '-',
- '01'
-)
-EXPR;
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-01-01' )";
         } elseif ($this->periodInterval->m) {
-            $groupExpr = <<<EXPR
-CONCAT(
- YEAR( {$fieldWithTZ} ), '-',
- MONTH( {$fieldWithTZ} ), '-',
- '01'
-)
-EXPR;
+            $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-01' )";
         } elseif ($this->periodInterval->d) {
-            $groupExpr = <<<EXPR
-CONCAT(
- YEAR( {$fieldWithTZ} ), '-',
- MONTH( {$fieldWithTZ} ), '-',
- DAY( {$fieldWithTZ} )
-)
-EXPR;
-            } elseif ($this->periodInterval->h) {
+            $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d' )";
+        } elseif ($this->periodInterval->h) {
+            $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:00:00' )";
+        } elseif ($this->periodInterval->i) {
+            $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:%i:00' )";
+        } elseif ($this->periodInterval->s) {
+            $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:%i:%s' )";
+        }
     
-                if ($this->timeZoneForHours) {
-                    $groupExpr = <<<EXPR
-CONCAT(
- YEAR( {$fieldWithTZ} ), '-',
- MONTH( {$fieldWithTZ} ), '-',
- DAY( {$fieldWithTZ} ), ' ',
- HOUR( {$fieldWithTZ} ), '-',
- '00', '-',
- '00'
-)
-EXPR;
-                } else {
-                    $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:00:00' )";
-                }
-            }
-    
-            // now $groupExpr contains date timestamp in target time zone
-            // converting to universal time
+        // now $groupExpr contains date timestamp in target time zone
+        // converting to universal time
             
-            $groupExpr = <<<EXPR
+        $groupExpr = <<<EXPR
 UNIX_TIMESTAMP(
 CONVERT_TZ(
 {$groupExpr},
@@ -228,28 +205,11 @@ CONVERT_TZ(
 )
 EXPR;
 
-    $query->addSelect(['start' => new Expression($groupExpr)]);
-    $query->groupBy('start');
-    $query->indexBy('start');
-    $query->orderBy([$this->dateField => SORT_ASC]);
+        $query->addSelect(['start' => new Expression($groupExpr)]);
+        $query->groupBy('start');
+        $query->indexBy('start');
+        $query->orderBy([$this->dateField => SORT_ASC]);
     
-    /*
-     * query result fields
-     * 'start' - timestamp of period start
-     * 'value' - aggregated value
-     *
-     */
-    
-    /*
-     * s ts - (ts % ${seconds:-1})
-     * i ts - (ts % (60 * ${minutes:-1}))
-     * h YMD() + (HOUR() - HOUR() % ${hours});
-     * d YEAR() + DAYOFYEAR()
-     * w YEARWEEK() - % ...
-     * m YEAR() * 12 + MONTH() - % ...
-     * y YEAR() - % ...
-     *
-     */
     }
     
     /**
