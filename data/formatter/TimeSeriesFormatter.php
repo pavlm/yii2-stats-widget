@@ -121,6 +121,8 @@ class TimeSeriesFormatter implements TimeSeriesProvider
     {
         $it = $this->provider->getIterator();
         $tz = $this->provider->getTimeZone();
+        $tzPrev = date_default_timezone_get();
+        date_default_timezone_set($tz->getName()); // for strftime()
         foreach ($it as $period) {
             $date = new \DateTime('@' . $period['ts']);
             $date->setTimezone($tz);
@@ -128,6 +130,7 @@ class TimeSeriesFormatter implements TimeSeriesProvider
             $period['label'] = strftime($this->format, $date->getTimestamp());
             yield $period;
         }
+        date_default_timezone_set($tzPrev);
     }
     
 }

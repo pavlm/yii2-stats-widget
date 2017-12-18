@@ -78,10 +78,13 @@ class DatePeriodFormatter
             $subInterval = new \DateInterval($spec);
             $this->end->sub($subInterval);
         }
+        $tzPrev = date_default_timezone_get();
+        date_default_timezone_set($this->start->getTimezone()->getName()); // for strftime()
         $dates = $singleCalendarPeriod ? [$this->start] : [$this->start, $this->end];
         foreach ($dates as $i => $date) {
             $dates[$i] = strftime($format, $date->getTimestamp()); // $date->format($format);
         }
+        date_default_timezone_set($tzPrev);
         return implode(' - ', $dates);
     }
 }

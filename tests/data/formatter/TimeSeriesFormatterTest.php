@@ -50,6 +50,13 @@ class TimeSeriesFormatterTest extends TestCase
                 new \DateInterval('P1D'),
                 ['2017 Dec 31', '2018 Jan 01', '2018 Jan 02', ],
             ],
+            [
+                [1, 2, ],
+                new \DateTime('2017-01-01'),
+                new \DateInterval('P1Y'),
+                ['2017', '2018', ],
+            ],
+            
         ];
     }
     
