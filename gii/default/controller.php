@@ -29,14 +29,14 @@ class <?= StringHelper::basename($generator->controllerClass) ?> extends <?= '\\
 <?php foreach ($tables as $table => $data): ?>
             'stats-<?= $table ?>' => [
                 'class' => StatsAction::class,
-                'providerFactory' => new TimeSeriesProviderCallbackFactory(function ($rangeStart, $rangeEnd, $periodInterval, $timeZone) {
+                'providerFactory' => new TimeSeriesProviderCallbackFactory(function ($rangeStart, $rangeEnd, $period, $timeZone) {
                     return new QueryStatsProvider([
                         'query' => (new Query())->from('<?= $table ?>'),
                         'dateField' => '<?= $data['dateColumn'] ?>',
                         'dateFieldType' => '<?= $data['type'] ?>',
                         'rangeStart' => $rangeStart,
                         'rangeEnd' => $rangeEnd,
-                        'periodInterval' => $periodInterval,
+                        'period' => $period,
                         'timeZone' => $timeZone,
                         //'timeZoneConnection' => 'Europe/Moscow',
                     ]);

@@ -20,7 +20,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     /**
      * @var \DateInterval
      */
-    public $periodInterval;
+    public $period;
 
     /**
      * @var \DateTime
@@ -87,9 +87,9 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     /**
      * @return \DateInterval
      */
-    public function getPeriodInterval()
+    public function getPeriod()
     {
-        return $this->periodInterval;
+        return $this->period;
     }
     
     /**
@@ -130,7 +130,7 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
     public function getIterator()
     {
         $data = $this->loadData(true);
-        $range = new \DatePeriod($this->getRangeStart(), $this->getPeriodInterval(), $this->getRangeEnd());
+        $range = new \DatePeriod($this->getRangeStart(), $this->getPeriod(), $this->getRangeEnd());
         foreach ($range as $i => $groupStart) {
             $uts = $groupStart->getTimestamp();
             yield [
@@ -158,9 +158,9 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
          }
     
          $groupExpr = '';
-         if ($this->periodInterval->y) {
+         if ($this->period->y) {
          $groupExpr = sprintf("YEAR(%s)", $fieldWithTZ);
-         } elseif ($this->periodInterval->m) {
+         } elseif ($this->period->m) {
          $groupExpr = sprintf("YEAR(%s) * 12 + MONTH(%s)", $fieldWithTZ, $fieldWithTZ);
          }
     
@@ -180,17 +180,17 @@ class QueryStatsProvider extends Object implements TimeSeriesProvider
             $fieldWithTZ = sprintf("CONVERT_TZ(%s, '%s', '%s')", $this->dateField, $this->timeZoneStorage->getName(), $this->timeZone->getName());
         }
     
-        if ($this->periodInterval->y) {
+        if ($this->period->y) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-01-01' )";
-        } elseif ($this->periodInterval->m) {
+        } elseif ($this->period->m) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-01' )";
-        } elseif ($this->periodInterval->d) {
+        } elseif ($this->period->d) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d' )";
-        } elseif ($this->periodInterval->h) {
+        } elseif ($this->period->h) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:00:00' )";
-        } elseif ($this->periodInterval->i) {
+        } elseif ($this->period->i) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:%i:00' )";
-        } elseif ($this->periodInterval->s) {
+        } elseif ($this->period->s) {
             $groupExpr = "DATE_FORMAT( {$fieldWithTZ}, '%Y-%m-%d %H:%i:%s' )";
         }
     

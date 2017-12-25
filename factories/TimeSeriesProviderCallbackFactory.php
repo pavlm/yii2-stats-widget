@@ -10,7 +10,7 @@ class TimeSeriesProviderCallbackFactory implements TimeSeriesProviderFactory
         $this->callback = $callback;
     }
     
-    public function create($rangeStart, $rangeEnd, $periodInterval, $timeZone)
+    public function create($rangeStart, $rangeEnd, $period, $timeZone)
     {
         return call_user_func_array($this->callback, func_get_args());
     }

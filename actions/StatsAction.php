@@ -95,7 +95,7 @@ class StatsAction extends Action
      */
     protected function prepare($period = null, $range = null, $start = null, $end = null)
     {
-        $periodInterval = $period ? new \DateInterval($period) : $this->defaultPeriod;
+        $period = $period ? new \DateInterval($period) : $this->defaultPeriod;
         
         $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : $this->defaultStart;
         
@@ -111,7 +111,7 @@ class StatsAction extends Action
         $provider = $this->providerFactory->create(
             $this->rangePagination->getRangeStart(), 
             $this->rangePagination->getRangeEnd(), 
-            $periodInterval, 
+            $period, 
             $this->timeZone);
         $formatter = $this->formatterFactory->create($provider);
         return $formatter;
@@ -142,7 +142,7 @@ class StatsAction extends Action
                 'totalValue' => $provider->getTotalValue(),
             ],
             'state' => [
-                'period' => $intervalSpec($provider->getPeriodInterval()),
+                'period' => $intervalSpec($provider->getPeriod()),
                 'range' => $intervalSpec($this->rangePagination->getInterval()),
                 'start' => $start,
                 'prev' => $this->rangePagination->getPrevRangeStart()->format($this->dateFormat),

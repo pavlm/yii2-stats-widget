@@ -22,24 +22,24 @@ class MultiStatsProvider implements TimeSeriesProvider
     /**
      * @param \DateTime $rangeStart
      * @param \DateTime $rangeEnd
-     * @param \DateInterval $periodInterval
+     * @param \DateInterval $period
      * @param \DateTimeZone $timeZone
      * @param TimeSeriesProviderFactory[] $statsProviderFactories
      */
-    public function __construct($rangeStart, $rangeEnd, $periodInterval, $timeZone, $statsProviderFactories)
+    public function __construct($rangeStart, $rangeEnd, $period, $timeZone, $statsProviderFactories)
     {
         $this->statsProviderFactories = $statsProviderFactories;
-        $this->statsProviders = array_map(function (TimeSeriesProviderFactory $factory) use ($rangeStart, $rangeEnd, $periodInterval, $timeZone) {
-            return $factory->create($rangeStart, $rangeEnd, $periodInterval, $timeZone);
+        $this->statsProviders = array_map(function (TimeSeriesProviderFactory $factory) use ($rangeStart, $rangeEnd, $period, $timeZone) {
+            return $factory->create($rangeStart, $rangeEnd, $period, $timeZone);
         }, $this->statsProviderFactories);
     }
 
     /**
      * @return \DateInterval
      */
-    public function getPeriodInterval()
+    public function getPeriod()
     {
-        return $this->statsProviders[0]->getPeriodInterval();
+        return $this->statsProviders[0]->getPeriod();
     }
     
     /**
