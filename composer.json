@@ -1,6 +1,7 @@
 {
     "name": "pavlm/yii2-stats-widget",
     "description": "Statistics widget for exploring time series data from diffrent sources of your application",
+    "license": "MIT",
     "type": "yii2-extension",
     "require": {
     	"php": ">=5.5",
