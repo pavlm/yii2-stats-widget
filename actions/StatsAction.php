@@ -25,7 +25,7 @@ class StatsAction extends Action
 {
     
     /**
-     * @var TimeSeriesProviderFactory
+     * @var TimeSeriesProviderFactory specific time series provider constructor
      */
     public $providerFactory;
     
@@ -35,12 +35,12 @@ class StatsAction extends Action
     public $formatterFactory;
     
     /**
-     * @var RangePagination|string
+     * @var RangePagination|string initial range width
      */
     public $defaultRange = 'P1Y';
     
     /**
-     * @var \DateInterval|string
+     * @var \DateInterval|string initial period width
      */
     public $defaultPeriod = 'P1M';
     
@@ -50,14 +50,24 @@ class StatsAction extends Action
     public $defaultStart;
 
     /**
-     * @var \DateTimeZone|string
+     * @var \DateTimeZone|string time zone of time series
      */
     public $timeZone;
 
     /**
-     * @var string
+     * @var string input date format
      */
     public $dateFormat = 'Y-m-d\TH:i:s';
+    
+    /**
+     * @var string class name for a date pagination
+     */
+    public $rangePaginationClass = RangePagination::class;
+    
+    /**
+     * @var string class name for a date formatter
+     */
+    public $datePeriodFormatterClass = DatePeriodFormatter::class;
     
     public $responseFormatter = [
         'class' => JsonResponseFormatter::class,
@@ -76,7 +86,7 @@ class StatsAction extends Action
         }
         $this->timeZone = is_string($this->timeZone) ? new \DateTimeZone($this->timeZone) : $this->timeZone;
         $this->timeZone = $this->timeZone ?: new \DateTimeZone(date_default_timezone_get());
-        $this->defaultRange = is_string($this->defaultRange) ? new RangePagination($this->defaultRange, null, $this->timeZone) : $this->defaultRange;
+        $this->defaultRange = is_string($this->defaultRange) ? Yii::createObject($this->rangePaginationClass, [$this->defaultRange, null, null, $this->timeZone]) : $this->defaultRange;
         $this->defaultPeriod = is_string($this->defaultPeriod) ? new \DateInterval($this->defaultPeriod) : $this->defaultPeriod;
         $this->defaultStart = is_string($this->defaultStart) ? new \DateTime($this->defaultStart) : $this->defaultStart;
         if (!$this->formatterFactory) {
@@ -99,11 +109,15 @@ class StatsAction extends Action
         
         $dateStart = $start ? \DateTime::createFromFormat($this->dateFormat, $start, $this->timeZone) : $this->defaultStart;
         
+        $dateEnd = $end ? \DateTime::createFromFormat($this->dateFormat, $end, $this->timeZone) : null;
+        
         if ($range || $dateStart) {
-            $this->rangePagination = new RangePagination(
+            $this->rangePagination = Yii::createObject($this->rangePaginationClass, [
                 $range ?: $this->defaultRange->getInterval(),
-                $dateStart ?: null,
-                $this->timeZone);
+                $dateStart,
+                $dateEnd,
+                $this->timeZone,
+            ]);
         } else {
             $this->rangePagination = $this->defaultRange;
         }
@@ -134,7 +148,7 @@ class StatsAction extends Action
         $intervalSpec = function ($interval) {
             return trim(preg_replace('#(?<=[A-Z])0.#', '', $interval->format('P%yY%mM%dDT%hH%iM%sS')), 'T');
         };
-        $dpFormatter = new DatePeriodFormatter($this->rangePagination->getRangeStart(), $this->rangePagination->getRangeEnd());
+        $dpFormatter = Yii::createObject($this->datePeriodFormatterClass, [$this->rangePagination->getRangeStart(), $this->rangePagination->getRangeEnd()]);
         
         $data = [
             'stats' => [

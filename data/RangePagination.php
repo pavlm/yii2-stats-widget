@@ -8,11 +8,16 @@ class RangePagination
      * @var \DateInterval
      */
     private $interval;
-    
+
     /**
      * @var \DateTime
      */
     private $start;
+
+    /**
+     * @var \DateTime
+     */
+    private $end;
     
     /**
      * @var \DateTimeZone
@@ -38,13 +43,15 @@ class RangePagination
      * 
      * @param string|\DateInterval $interval
      * @param integer|\DateTime $start
+     * @param integer|\DateTime $end
      * @param string|\DateTimeZone $timeZone
      */
-    public function __construct($interval = 'P1D', $start = null, $timeZone = null)
+    public function __construct($interval = 'P1D', $start = null, $end = null, $timeZone = null)
     {
         $this->interval = is_string($interval) ? new \DateInterval($interval) : $interval;
         $this->setTimeZone($timeZone);
         $this->setStart($start);
+        $this->setEnd($end);
         $this->init();
     }
     
@@ -68,6 +75,15 @@ class RangePagination
             $this->start = $value;
         }
     }
+
+    protected function setEnd($value)
+    {
+        if ($value && !$this->interval) {
+            $this->end = is_object($value) ? $value : \DateTime::createFromFormat('U', $value, $this->getTimeZone());
+        } else {
+            $this->end = $value;
+        }
+    }
     
     protected function init()
     {
@@ -89,18 +105,27 @@ class RangePagination
         call_user_func_array([$date, 'setDate'], array_slice($values, 0, 3));
         call_user_func_array([$date, 'setTime'], array_slice($values, 3, 3));
         $this->rangeStart = $date;
-        $date = clone $date;
-        $this->rangeEnd = $date->add($this->interval);
+        if ($end = $this->getEnd()) {
+            $this->rangeEnd = $end;
+        } else {
+            $date = clone $date;
+            $this->rangeEnd = $date->add($this->interval);
+        }
     }
     
     public function getInterval()
     {
         return $this->interval;
     }
-    
+
     public function getStart()
     {
         return $this->start;
+    }
+
+    public function getEnd()
+    {
+        return $this->end;
     }
     
     public function getRangeStart()
