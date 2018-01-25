@@ -65,7 +65,7 @@ class DatePeriodFormatter
         }, self::$intervalParts);
         $singleCalendarPeriod = in_array(array_sum($iparts), [1, 0]);
         $aparts = array_filter($iparts);
-        $lastPartIndex = end(array_keys($aparts));
+        $lastPartIndex = empty($aparts) ? false : array_keys($aparts)[count($aparts) - 1];
         $lastPartIndex = $lastPartIndex === false ? 5 : $lastPartIndex;
         
         $datePartFormats = array_slice(array_values($this->datePartFormats), 0, $lastPartIndex + 1);
