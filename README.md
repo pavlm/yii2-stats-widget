@@ -60,3 +60,5 @@ echo StatsWidget::widget([
 ### 3. Open page with stats widget. 
 
 ![StatsWidget example](stats-widget-demo.png)
+
+![stats](https://mc.yandex.ru/watch/47443597)
