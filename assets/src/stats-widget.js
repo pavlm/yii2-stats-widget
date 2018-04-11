@@ -6,6 +6,7 @@
 		btnNext: '.stwg-btn-next',
 		btnZoomIn: '.stwg-btn-zoomin',
 		btnZoomOut: '.stwg-btn-zoomout',
+		btnRange: '.stwg-btn-range',
 		rangeLabel: '.stwg-range-label',
 		totalValueTag: '.stwg-total-value', 
 		levels: [],
@@ -32,7 +33,8 @@
     			btnPrev: 'prev',
     			btnNext: 'next',
     			btnZoomIn: 'zoomIn',
-    			btnZoomOut: 'zoomOut'
+    			btnZoomOut: 'zoomOut',
+    			btnRange: 'rangeClick'
         	};
         	for (var btn in binds) {
         		var selector = this.opts[btn];
@@ -95,6 +97,8 @@
 			this.chartjs = new Chart(ctx, chart);
 			$(this.opts.rangeLabel, this.$el).text(this.state.rangeLabel);
 			$(this.opts.totalValueTag, this.$el).text(this.stats.totalValue);
+			$(this.opts.btnRange, this.$el).removeClass('active').
+				filter('[data-range="' + this.state.range + '"]').addClass('active');
         	
         },
         
@@ -144,6 +148,12 @@
         	if (nextIdx < 0) return;
         	level = this.opts.levels[nextIdx];
         	this.load(level[0], level[1], this.state.start);
+        },
+        range: function(period, range) {
+        	this.load(period, range, this.state.start);
+        },
+        rangeClick: function(e) {
+        	this.range($(e.target).data('period'), $(e.target).data('range'));
         }
 
     };

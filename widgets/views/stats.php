@@ -1,5 +1,4 @@
 <?php
-use yii\helpers\Url;
 use pavlm\yii\stats\assets\StatsWidgetAsset;
 use yii\helpers\Json;
 use yii\helpers\Html;
@@ -13,7 +12,7 @@ $id = $widget->getId();
 ?>
 <?= Html::beginTag('div', array_merge(['id' => $id], $widget->options))?>
 <?= Html::tag('canvas', null, array_merge(['id' => $id . '-canvas'], $widget->canvasOptions)) ?>
-<?= $this->render('_stats-controls', []) ?>
+<?= $this->render($widget->viewStatsControls, []) ?>
 <?= Html::endTag('div') ?>
 <?php
 $optionsJson = Json::encode($widget->getClientOptions());

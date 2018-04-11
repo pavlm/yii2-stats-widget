@@ -3,11 +3,6 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 $widget = $this->context;
-
-$tag = function($tag, $space = ' ') {
-    if (!$tag) return;
-    return call_user_func_array([Html::class, 'tag'], $tag) . $space;
-}
 ?>
 <div class="stwg-zoom-controls">
 </div>
@@ -17,20 +12,33 @@ $tag = function($tag, $space = ' ') {
 ?>	
 	</div>
 	<div class="pull-right">
+	
+<?= Html::a('<i class="glyphicon glyphicon-home"></i>', null, ['class' => 'stwg-btn-home btn btn-default btn-xs']); ?>
+
+<?= Html::a('<i class="glyphicon glyphicon-chevron-left"></i>', null, ['class' => 'stwg-btn-prev btn btn-default btn-xs']); ?>
+
+<?= Html::a('<i class="glyphicon glyphicon-chevron-right"></i>', null, ['class' => 'stwg-btn-next btn btn-default btn-xs']); ?>
+
+<?php /* ?>
+<?= Html::a('<i class="glyphicon glyphicon-plus"></i>', null, ['class' => 'stwg-btn-zoomin btn btn-default btn-xs']); ?>
+
+<?= Html::a('<i class="glyphicon glyphicon-minus"></i>', null, ['class' => 'stwg-btn-zoomout btn btn-default btn-xs']); ?>
+<?php */ ?>
+
+<?= Html::tag('span', '&nbsp;', ['class' => 'stwg-range-label btn btn-default btn-xs']); ?>
+
+<div class="btn-group">
+<?php foreach ($widget->levels as list($period, $range, $label)): ?>
 <?php
-echo $tag($widget->btnHome);
-echo $tag($widget->rangeLabel);
-echo $tag($widget->btnPrev);
-echo $tag($widget->btnNext);
-echo $tag($widget->btnZoomIn);
-echo $tag($widget->btnZoomOut);
-if ($widget->totalLabel) {
-    list($ttag, $tlabel, $topts) = $widget->totalLabel;
-    echo Html::beginTag($ttag, $topts);
-    echo Yii::t('app', $tlabel) . ': ';
-    echo Html::tag('span', '', ['class' => 'stwg-total-value']);
-    echo Html::endTag($ttag);
-}
+echo Html::a($label, null, ['class' => 'stwg-btn-range btn btn-default btn-xs', 'data-period' => $period, 'data-range' => $range]);
+?>
+<?php endforeach; ?>
+</div>
+<?php 
+echo Html::beginTag('span', ['class' => 'stwg-total-label label label-success']);
+echo Yii::t('app', 'Total') . ': ';
+echo Html::tag('span', '', ['class' => 'stwg-total-value']);
+echo Html::endTag('span');
 ?>
 	</div>
 </div>

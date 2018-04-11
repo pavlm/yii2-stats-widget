@@ -9,24 +9,13 @@ class StatsWidget extends Widget
     public $statsAction;
     
     public $levels = [
-        ['P1M', 'P1Y', '12 monthes'],
-        ['P1D', 'P1M', '31 day'],
-        ['PT1H', 'P1D', '24 hours'],
+        ['P1M', 'P1Y', 'year'],
+        ['P1D', 'P1M', 'month'],
+        ['PT1H', 'P1D', 'day'],
     ];
 
-    public $btnHome = ['a', '<i class="glyphicon glyphicon-home"></i>', ['class' => 'stwg-btn-home btn btn-default btn-xs']];
+    public $levelButtons = true;
 
-    public $btnPrev = ['a', '<i class="glyphicon glyphicon-chevron-left"></i>', ['class' => 'stwg-btn-prev btn btn-default btn-xs']];
-
-    public $btnNext = ['a', '<i class="glyphicon glyphicon-chevron-right"></i>', ['class' => 'stwg-btn-next btn btn-default btn-xs']];
-
-    public $btnZoomIn = ['a', '<i class="glyphicon glyphicon-plus"></i>', ['class' => 'stwg-btn-zoomin btn btn-default btn-xs']];
-
-    public $btnZoomOut = ['a', '<i class="glyphicon glyphicon-minus"></i>', ['class' => 'stwg-btn-zoomout btn btn-default btn-xs']];
-
-    public $rangeLabel = ['span', '&nbsp;', ['class' => 'stwg-range-label btn btn-default btn-xs']];
-
-    public $totalLabel = ['span', 'Total', ['class' => 'stwg-total-label label label-success']];
     
     public $chartJsOptions = [
         'data' => [
@@ -50,6 +39,8 @@ class StatsWidget extends Widget
     
     public $options = [
     ];
+    
+    public $viewStatsControls = '_stats-controls';
     
     public function getClientOptions()
     {
