@@ -1,8 +1,10 @@
 <?php
 namespace pavlm\yii\stats\widgets;
 
+use Yii;
 use yii\base\Widget;
 use yii\helpers\Url;
+use yii\base\InvalidConfigException;
 
 class StatsWidget extends Widget
 {
@@ -49,6 +51,15 @@ class StatsWidget extends Widget
             'chartJsOptions' => $this->chartJsOptions,
             'levels' => $this->levels,
         ];
+    }
+    
+    public function t($message, $params = [])
+    {
+        try {
+            return Yii::t('stats-widget', $message, $params);
+        } catch (InvalidConfigException $e) {
+            return $message;
+        }
     }
     
     public function run()

@@ -60,3 +60,17 @@ echo StatsWidget::widget([
 ### 3. Open page with stats widget. 
 
 ![StatsWidget example](stats-widget-demo.png)
+
+
+### Localization
+
+```php
+    'i18n' => [
+        'translations' => [
+            'stats-widget' => [
+                'class' => yii\i18n\PhpMessageSource::class,
+                'basePath' => '@pavlm/yii/stats/messages',
+            ],
+        ],
+    ],
+```

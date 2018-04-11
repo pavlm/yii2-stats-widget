@@ -30,13 +30,13 @@ $widget = $this->context;
 <div class="btn-group">
 <?php foreach ($widget->levels as list($period, $range, $label)): ?>
 <?php
-echo Html::a($label, null, ['class' => 'stwg-btn-range btn btn-default btn-xs', 'data-period' => $period, 'data-range' => $range]);
+echo Html::a($widget->t($label), null, ['class' => 'stwg-btn-range btn btn-default btn-xs', 'data-period' => $period, 'data-range' => $range]);
 ?>
 <?php endforeach; ?>
 </div>
 <?php 
 echo Html::beginTag('span', ['class' => 'stwg-total-label label label-success']);
-echo Yii::t('app', 'Total') . ': ';
+echo $widget->t('Total') . ': ';
 echo Html::tag('span', '', ['class' => 'stwg-total-value']);
 echo Html::endTag('span');
 ?>
