@@ -208,7 +208,7 @@ EXPR;
         $query->addSelect(['start' => new Expression($groupExpr)]);
         $query->groupBy('start');
         $query->indexBy('start');
-        $query->orderBy([$this->dateField => SORT_ASC]);
+        $query->orderBy(['start' => SORT_ASC]);
     
     }
     
