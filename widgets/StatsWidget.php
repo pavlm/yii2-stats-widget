@@ -42,6 +42,9 @@ class StatsWidget extends Widget
     public $options = [
     ];
     
+    /**
+     * @var string for bootstrap 4 set to '_stats-controls-bs4'
+     */
     public $viewStatsControls = '_stats-controls';
     
     public function getClientOptions()
