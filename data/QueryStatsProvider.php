@@ -1,7 +1,7 @@
 <?php
 namespace pavlm\yii\stats\data;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\db\Query;
 use yii\db\Expression;
 
@@ -11,7 +11,7 @@ use yii\db\Expression;
  * 
  * @author pavlm
  */
-class QueryStatsProvider extends Object implements TimeSeriesProvider
+class QueryStatsProvider extends BaseObject implements TimeSeriesProvider
 {
     const DATETYPE_DATETIME = 'DATETIME';
     const DATETYPE_TIMESTAMP = 'TIMESTAMP';

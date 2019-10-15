@@ -1,11 +1,11 @@
 <?php
 namespace pavlm\yii\stats\data;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 use pavlm\yii\stats\factories\TimeSeriesProviderFactory;
 use yii\base\InvalidConfigException;
 
-class MergedStatsProvider extends Object implements TimeSeriesProvider
+class MergedStatsProvider extends BaseObject implements TimeSeriesProvider
 {
     /**
      * @var TimeSeriesProviderFactory[]
