@@ -169,7 +169,7 @@ class StatsAction extends Action
         
         // manual response encoding to avoid JSON_ERROR_INF_OR_NAN error
         $response->format = Response::FORMAT_RAW;
-        $response->getHeaders()->set('Content-Type', 'application/javascript; charset=UTF-8');
+        $response->getHeaders()->set('Content-Type', 'application/json; charset=UTF-8');
         $response->data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
         return $response;
     }
